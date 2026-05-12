@@ -3,12 +3,16 @@ import axios from "axios";
 import toast, { Toaster } from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+
+type User = {
+  username: string;
+  email: string;
+};
 export default function ProfilePage() {
   const router = useRouter()
 
 
-  const [user, setUser] = useState(null);
-
+  const [user, setUser] = useState<User | null>(null);
   useEffect(() => {
     const getUser = async () => {
       try {
@@ -54,7 +58,7 @@ export default function ProfilePage() {
 
         {/* Buttons */}
         <div className="mt-4 flex gap-2 justify-center">
-       
+
           <button className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600" onClick={logout}>
             Logout
           </button>
