@@ -1,49 +1,43 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import axios from "axios";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
-const searchParams = useSearchParams();
 
-useEffect(() => {
-  const token = searchParams?.get("token");
-}, [searchParams]);
+  const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [success, setSuccess] = useState(false);
-  const [message, setMessage] = useState(
-    "Verifying your reset password link..."
-  );
+  const [message, setMessage] = useState("Verifying your reset password link...");
   const [password, setPassword] = useState("");
   const [updating, setUpdating] = useState(false);
 
-  // Verify token
+  // Get token safely from URL
   useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const t = params.get("token");
+    setToken(t);
+
     const verifyToken = async () => {
       try {
-        const token = searchParams.get("token");
-
-        if (!token) {
+        if (!t) {
           setMessage("Invalid reset password link");
           setSuccess(false);
+          setLoading(false);
           return;
         }
 
-        const response = await axios.post(
-          "/api/users/verifyresettoken",
-          { token }
-        );
+        const response = await axios.post("/api/users/verifyresettoken", {
+          token: t,
+        });
 
         setSuccess(true);
-        setMessage(
-          response.data.message || "Reset password link is valid 🎉"
-        );
+        setMessage(response.data.message || "Reset password link is valid 🎉");
       } catch (error: any) {
         setSuccess(false);
-
         setMessage(
           error?.response?.data?.error ||
             "Reset password link expired or invalid"
@@ -54,14 +48,12 @@ useEffect(() => {
     };
 
     verifyToken();
-  }, [searchParams]);
+  }, []);
 
   // Update password
   const ResetPassword = async () => {
     try {
       setUpdating(true);
-
-      const token = searchParams.get("token");
 
       const response = await axios.post("/api/users/resetpassword", {
         token,
@@ -111,7 +103,6 @@ useEffect(() => {
 
               <input
                 type="password"
-                id="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter new password"
@@ -122,7 +113,7 @@ useEffect(() => {
             <button
               onClick={ResetPassword}
               disabled={updating || password.length < 6}
-              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white py-3 rounded-xl transition duration-200"
+              className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-700 disabled:cursor-not-allowed text-white py-3 rounded-xl transition"
             >
               {updating ? "Updating Password..." : "Update Password"}
             </button>
@@ -132,10 +123,7 @@ useEffect(() => {
         {/* Back to login */}
         {!loading && (
           <div className="text-center mt-6">
-            <Link
-              href="/login"
-              className="text-blue-400 hover:underline"
-            >
+            <Link href="/login" className="text-blue-400 hover:underline">
               Back to Login
             </Link>
           </div>
