@@ -12,7 +12,6 @@ export default function SignUpPage() {
         password: "",
         username: ""
     })
-    const [buttonDisabled, setButtonDisabled] = useState(false)
     const [loading, setLoading] = useState(false)
 
     const onSignup = async () => {
@@ -24,7 +23,7 @@ export default function SignUpPage() {
             console.log("Signup success", response.data);
 
             // redirect to login page after success
-            router.push("/pages/login");
+            router.push("/login");
 
         } catch (error: any) {
             toast.error(error.response?.data?.error || "Something went wrong");
@@ -34,17 +33,18 @@ export default function SignUpPage() {
         }
     };
 
-    useEffect(() => {
-        if (
-            user.email.length > 0 &&
-            user.password.length > 0 &&
-            user.username.length > 0
-        ) {
-            setButtonDisabled(false);
-        } else {
-            setButtonDisabled(true);
-        }
-    }, [user]);
+ const [buttonDisabled, setButtonDisabled] = useState(false)
+
+useEffect(() => {
+    if (user.email.length > 0 &&
+        user.password.length > 0 &&
+        user.username.length > 0
+    ) {
+        setButtonDisabled(false);
+    } else {
+        setButtonDisabled(true);
+    }
+}, [user]);
     return (
      <div className="flex items-center justify-center min-h-screen bg-gray-900 px-4">
   
@@ -52,13 +52,13 @@ export default function SignUpPage() {
 
   <div className="bg-black rounded-2xl shadow-xl p-8 w-full max-w-md">
 
-    <h1 className="text-2xl font-bold text-center text-white-800 mb-6">
+    <h1 className="text-2xl font-bold text-center text-white mb-6">
       {loading ? "Processing..." : "Create Account"}
     </h1>
 
     {/* Username */}
     <div className="mb-4">
-      <label className="block text-sm font-medium text-white-600 mb-1">
+      <label className="block text-sm font-medium text-white-300 mb-1">
         Username
       </label>
       <input
@@ -75,7 +75,7 @@ export default function SignUpPage() {
 
     {/* Email */}
     <div className="mb-4">
-      <label className="block text-sm font-medium white-gray-600 mb-1">
+      <label className="block text-sm font-medium text-white-400 mb-1">
         Email
       </label>
       <input
@@ -119,7 +119,7 @@ export default function SignUpPage() {
     {/* Login link */}
     <p className="text-center text-sm text-white-600 mt-4">
       Already have an account?{" "}
-      <Link href="/pages/login" className="text-blue-600 hover:underline">
+      <Link href="/login" className="text-blue-600 hover:underline">
         Login
       </Link>
     </p>

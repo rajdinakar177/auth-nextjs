@@ -3,9 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import User from "@/app/models/userModel";
 import jwt from "jsonwebtoken";
-connect();
+
 
 export async function POST(request: NextRequest) {
+   await connect();
   try {
     const reqBody = await request.json();
     const { email, password } = reqBody;
@@ -36,8 +37,12 @@ export async function POST(request: NextRequest) {
       username: user.username,
     }
 
+    const secret = process.env.TOKEN_SECRET;
+if (!secret) {
+  throw new Error("TOKEN_SECRET is not defined");
+}
     // 3. Generate JWT token
-    const token = jwt.sign(tokenData, process.env.TOKEN_SECRET
+    const token = jwt.sign(tokenData, secret
       , { expiresIn: "1h" });
 
 
